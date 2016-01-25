@@ -1,17 +1,24 @@
 class Order
-  attr_accessor :id, :total_filled, :price
+  attr_accessor :id, :total_filled, :price, :closed
   def initialize api_response
     @id = api_response[:id]
     @price = api_response[:price]
     @total_filled = api_response[:totalFilled]
+    check_closed api_response
   end
 
   def refresh api_response
+    check_closed api_response
     fill_delta = api_response[:totalFilled] - @total_filled
     @total_filled = api_response[:totalFilled]
     return fill_delta
   end
 
+  def check_closed api_response
+    if @total_filled == api_response[:totalFilled]
+      @closed = true
+    end
+  end
 end
 
 class StockFighter
@@ -27,6 +34,10 @@ class StockFighter
 
   def buy_limit qty, price
     place_order qty, "buy", "limit", price
+  end
+
+  def sell_limit qty, price
+    place_order qty, "sell", "limit", price
   end
 
   def place_order qty, buy_sell, order_type, price

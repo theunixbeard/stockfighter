@@ -3,6 +3,10 @@ GEM
   specs:
     coderay (1.1.0)
     dotenv (2.0.2)
+    eventmachine (1.0.9.1)
+    faye-websocket (0.10.2)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
     httparty (0.13.7)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
@@ -14,12 +18,16 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     slop (3.6.0)
+    websocket-driver (0.6.3)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dotenv
+  faye-websocket
   httparty
   pry
 
