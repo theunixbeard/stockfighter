@@ -1,7 +1,3 @@
-require_relative '../lib/init.rb'
-require_relative './constants.rb'
-require_relative '../lib/ben_lib.rb'
-
 sf = StockFighter.new ACCOUNT, VENUE, STOCK
 
 class MarketMaker
