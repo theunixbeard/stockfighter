@@ -5,9 +5,21 @@
 tickertape_url = "#{BASE_WS_URL}/#{ACCOUNT}/venues/#{VENUE}/tickertape/stocks/#{STOCK}"
 execution_url = "#{BASE_WS_URL}/#{ACCOUNT}/venues/#{VENUE}/executions/stocks/#{STOCK}"
 
-time = Time.now.getutc
-bid = File.open("#{ENV['level']}-#{time}-bid.raw", 'w')
-ask = File.open("#{ENV['level']}-#{time}-ask.raw", 'w')
+BID_FILENAME = "lib/visualizer/highcharts/visualizer1/data/bid.json"
+ASK_FILENAME = "lib/visualizer/highcharts/visualizer1/data/ask.json"
+
+comma = nil # to not write comma before first line
+
+bid_f = File.open(BID_FILENAME, 'w')
+ask_f = File.open(ASK_FILENAME, 'w')
+bid_f.write "["
+ask_f.write "["
+
+trap "SIGINT" do
+  bid_f.puts "\n]"
+  ask_f.puts "\n]"
+  exit 130
+end
 
 EM.run do
   tt_ws = Faye::WebSocket::Client.new(tickertape_url)
@@ -31,11 +43,14 @@ EM.run do
 
   # ORDER_SIZE, UNDERCUT
   tt_ws.on :message do |event|
-    puts "Logging TickerTape..."
     #p [:message, event.data]
-    quote = JSON.parse(event.data, symbolize_names: true)
-    file.write
-    mm.new_quote quote
+    quote = JSON.parse(event.data, symbolize_names: true)[:quote]
+    # Handle nils, add timestamp
+    time = (Time.parse(quote[:quoteTime]).to_f * 1000).to_i
+    puts "Logging TickerTape... #{time}"
+    bid_f.write "#{comma}\n[#{time}, #{quote[:bid] || 0}]"
+    ask_f.write "#{comma}\n[#{time}, #{quote[:ask] || 0}]"
+    comma = ","
   end
   ex_ws.on :message do |event|
     #puts "\n\nExecution Message: "

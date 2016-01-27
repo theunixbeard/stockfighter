@@ -13,6 +13,7 @@ level_map = {
 level = ARGV[0]
 ENV['level'] = level
 command = ARGV[1]
+command2 = ARGV[2]
 
 class GM
   def self.start level
@@ -48,7 +49,9 @@ elsif command == "stop"
   response = GM.stop
   puts response
   exit
-else
+elsif command == "start"
+  response = GM.start level
+else # No command is alias for start
   response = GM.start level
 end
 
@@ -64,7 +67,7 @@ ACCOUNT = response[:account]
 INSTANCE_ID = response[:instanceId]
 File.open("instance_id", 'w') {|f| f.write(INSTANCE_ID) }
 
-if command == "visualize"
+if command2 == "visualize"
   require_relative "./lib/visualizer.rb"
 else
   # Require level constants & run

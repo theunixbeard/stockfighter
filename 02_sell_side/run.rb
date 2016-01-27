@@ -42,8 +42,6 @@ class MarketMaker
     #   - If so, refresh it
     #   - If not, do nothing
     return unless exec[:account] == ACCOUNT
-    # TODO: IS THIS CODE EXECUTING ? NEVER SEEING POSITION PRINTOUT ...
-    binding.pry
 
     if exec[:order][:direction] == "buy"
       quantity = @buy_order.refresh exec[:order]
@@ -104,7 +102,7 @@ execution_url = "#{BASE_WS_URL}/#{ACCOUNT}/venues/#{VENUE}/executions/stocks/#{S
 
 EM.run do
   tt_ws = Faye::WebSocket::Client.new(tickertape_url)
-  ex_ws = Faye::WebSocket::Client.new(tickertape_url)
+  ex_ws = Faye::WebSocket::Client.new(execution_url)
 
   tt_ws.on :open do |event|
     puts "TickerTape WS Open"
@@ -122,7 +120,6 @@ EM.run do
     #ws = nil
   end
 
-  # ORDER_SIZE, UNDERCUT
   tt_ws.on :message do |event|
     puts "\n\nTickerTape Message: "
     p [:message, event.data]
